@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { format, isToday, isAfter } from 'date-fns'
 import RadioButton from '@/uiKit/RadioButton'
 import Button from '@/uiKit/Button';
@@ -14,6 +14,7 @@ function HabitListItem({ id, name, completedMap }: HabitListItemProps) {
     const { removeHabit } = useHabitActions();
     const { visibleDates } = useTimerange();
     const completedCount = getStreakCount(id, completedMap);
+    const handleRemove = useCallback(() => removeHabit(id), [id, removeHabit]);
 
     return <div className="w-full flex flex-1 flex-col items-start gap-4 p-4 rounded-md bg-zinc-800">
         <div className="flex flex-row w-full justify-between gap-2">
@@ -22,7 +23,7 @@ function HabitListItem({ id, name, completedMap }: HabitListItemProps) {
                 {completedCount > 0 && <span className="text-orange-500 text-md">🔥 {completedCount}</span>}
             </div>
             <div className="flex flex-row items-center gap-2">
-                <Button variant="danger" size="xs" kind="outline" aria-label="Remove habit" onClick={() => removeHabit(id)}>Remove</Button>
+                <Button variant="danger" size="xs" kind="outline" aria-label="Remove habit" onClick={handleRemove}>Remove</Button>
             </div>
         </div>
         <div className="flex flex-row flex-wrap w-full items-center gap-4">
@@ -52,6 +53,9 @@ const HabitListItemDate = memo(function HabitListItemDate({ id, date, completed 
     const { updateHabit } = useHabitActions();
     const shouldHighlight = isToday(date) && !completed;
     const isDisabled = isAfter(date, new Date());
+    const handleToggle = useCallback(() => {
+        updateHabit(getCompletionMapId(id, date));
+    }, [id, date, updateHabit]);
 
     return (
         <RadioButton
@@ -60,7 +64,7 @@ const HabitListItemDate = memo(function HabitListItemDate({ id, date, completed 
             disabled={isDisabled}
             kind={shouldHighlight ? "outline" : "filled"}
             aria-label={date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}
-            onClick={() => updateHabit(getCompletionMapId(id, date))}
+            onClick={handleToggle}
         >
             <div className="flex flex-1 w-full flex-col items-center gap-1">
                 <span className="flex flex-1 items-center text-xs">
