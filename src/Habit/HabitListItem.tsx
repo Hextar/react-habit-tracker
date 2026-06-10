@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { format, isToday, isAfter } from 'date-fns'
 import RadioButton from '@/uiKit/RadioButton'
 import Button from '@/uiKit/Button';
@@ -13,7 +13,10 @@ type HabitListItemProps = Habit
 function HabitListItem({ id, name, completedMap }: HabitListItemProps) {
     const { removeHabit } = useHabitActions();
     const { visibleDates } = useTimerange();
-    const completedCount = getStreakCount(id, completedMap);
+    const completedCount = useMemo(
+        () => getStreakCount(id, completedMap),
+        [id, completedMap],
+    );
     const handleRemove = useCallback(() => removeHabit(id), [id, removeHabit]);
 
     return <div className="w-full flex flex-1 flex-col items-start gap-4 p-4 rounded-md bg-zinc-800">
