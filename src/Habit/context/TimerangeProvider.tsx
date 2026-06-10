@@ -53,18 +53,21 @@ export default function TimerangeProvider({ children }: { children: React.ReactN
     return `${format(weekDates.startOfWeek, 'MMM d')} - ${format(weekDates.endOfWeek, 'MMM d')}`;
   }, [weekDates]);
 
+  const contextValue = useMemo(
+    () => ({
+      startOfWeek: weekDates.startOfWeek,
+      endOfWeek: weekDates.endOfWeek,
+      visibleDates,
+      formattedWeekRange,
+      goToPreviousWeek,
+      goToNextWeek,
+      isCurrentWeek,
+    }),
+    [weekDates, visibleDates, formattedWeekRange, goToPreviousWeek, goToNextWeek, isCurrentWeek],
+  );
+
   return (
-    <TimerangeContext.Provider
-      value={{
-        startOfWeek: weekDates.startOfWeek,
-        endOfWeek: weekDates.endOfWeek,
-        visibleDates,
-        formattedWeekRange,
-        goToPreviousWeek,
-        goToNextWeek,
-        isCurrentWeek,
-      }}
-    >
+    <TimerangeContext.Provider value={contextValue}>
       {children}
     </TimerangeContext.Provider>
   );
